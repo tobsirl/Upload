@@ -8,5 +8,10 @@
   },
   "keywords": [],
   "author": "Paul Tobin <tobster111@gmail.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "formidable": "^1.2.1"
+  }
 }
