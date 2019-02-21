@@ -26,6 +26,26 @@ class Upload extends Component {
     }));
   }
 
+  renderProgress(file) {
+    const uploadProgress = this.state.uploadProgress[file.name];
+    if (this.state.uploading || this.state.successfullUploaded) {
+      return (
+        <div className="ProgressWrapper">
+          <Progress progress={uploadProgress ? uploadProgress.percentage : 0} />
+          <img
+            className="CheckIcon"
+            alt="done"
+            src="baseline-check_circle_outline-24px.svg"
+            style={{
+              opacity:
+                uploadProgress && uploadProgress.state === 'done' ? 0.5 : 0
+            }}
+          />
+        </div>
+      );
+    }
+  }
+
   render() {
     return (
       <div className="Upload">
@@ -38,11 +58,11 @@ class Upload extends Component {
             />
           </div>
           <div className="Files">
-            // Add this:
             {this.state.files.map(file => {
               return (
                 <div key={file.name} className="Row">
                   <span className="Filename">{file.name}</span>
+                  {this.renderProgress(file)}
                 </div>
               );
             })}
