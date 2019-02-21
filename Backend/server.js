@@ -14,7 +14,7 @@ server.use(cors(corsOptions));
 
 server.post('/upload', upload);
 
-const PORT = 3000;
+const PORT = 8000;
 
 server.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
