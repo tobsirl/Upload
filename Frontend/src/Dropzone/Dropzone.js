@@ -4,11 +4,21 @@ import './Dropzone.css';
 class Dropzone extends Component {
   constructor(props) {
     super(props);
+    this.fileInputRef = React.createRef();
+  }
+
+  openFileDialog() {
+    if (this.props.disabled) return;
+    this.fileInputRef.current.click();
   }
 
   render() {
     return (
-      <div className="Dropzone">
+      <div
+        className="Dropzone"
+        onClick={this.openFileDialog}
+        style={{ cursor: this.props.disabled ? 'default' : 'pointer' }}
+      >
         <img
           alt="upload"
           className="Icon"
