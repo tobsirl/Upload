@@ -3,10 +3,14 @@ const mongo = require('mongodb');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const Grid = require('gridfs-stream');
+const path = require('path');
+const crypto = require('crypto')
+const multer = require('multer');
+const GridFsStorage = require('multer-gridfs-storage');
 
 require('dotenv').config();
 
-const upload = require('./upload');
+const uploads = require('./upload');
 
 const server = express();
 
@@ -17,23 +21,9 @@ const corsOptions = {
 
 server.use(cors(corsOptions));
 
-server.post('/upload', upload);
+
 
 const { PORT, MONGO_URI, DATABASE } = process.env;
-
-// const connect = mongoose.createConnection(MONGO_URI);
-
-// connect
-//   .connect(MONGO_URI, () => {
-//     let gfs = Grid(connect.db, mongoose.mongo);
-//     gfs.collection('uploads');
-//   })
-//   .then(() => {
-//     console.log(`Connected to the database and stream setup`);
-//   })
-//   .catch(err => {
-//     console.log(err);
-//   });
 
 let db = new mongo.Db(DATABASE, new mongo.Server(MONGO_URI));
 
@@ -47,6 +37,29 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true }).then(
     console.log(err);
   }
 );
+
+// Create storage engine
+const storage = new GridFsStorage({
+  url: MONGO_URI,
+  file: (req, file) => {
+    return new Promise((resolve, reject) => {
+      crypto.randomBytes(16, (err, buf) => {
+        if (err) {
+          return reject(err);
+        }
+        const filename = buf.toString('hex') + path.extname(file.originalname);
+        const fileInfo = {
+          filename: filename,
+          bucketName: 'uploads'
+        };
+        resolve(fileInfo);
+      });
+    });
+  }
+});
+const upload = multer({ storage });
+
+server.post('/upload', upload.single('file'), uploads);
 
 server.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);

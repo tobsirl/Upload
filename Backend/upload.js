@@ -1,8 +1,7 @@
-const path = require('path');
-const crypto = require('crypto')
 
 
-module.exports = function upload(req, res) {
+
+module.exports = function uploads(req, res) {
   // const form = new IncomingForm();
 
   // form.on('file', (name, file) => {
