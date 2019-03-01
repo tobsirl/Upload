@@ -1,7 +1,32 @@
+const path = require('path');
+const crypto = require('crypto');
+const multer = require('multer');
+const GridFsStorage = require('multer-gridfs-storage');
 
 
 
-module.exports = function uploads(req, res) {
+// Create storage engine
+const storage = new GridFsStorage({
+  url: MONGO_URI,
+  file: (req, file) => {
+    return new Promise((resolve, reject) => {
+      crypto.randomBytes(16, (err, buf) => {
+        if (err) {
+          return reject(err);
+        }
+        const filename = buf.toString('hex') + path.extname(file.originalname);
+        const fileInfo = {
+          filename: filename,
+          bucketName: 'uploads'
+        };
+        resolve(fileInfo);
+      });
+    });
+  }
+});
+const upload = multer({ storage });
+
+module.exports = function uploads(upload.single('file'), (req, res) =>) {
   // const form = new IncomingForm();
 
   // form.on('file', (name, file) => {
