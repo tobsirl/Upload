@@ -1,16 +1,10 @@
 const express = require('express');
-const mongo = require('mongodb');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const Grid = require('gridfs-stream');
-const path = require('path');
-const crypto = require('crypto');
-const multer = require('multer');
-const GridFsStorage = require('multer-gridfs-storage');
 
 require('dotenv').config();
 
-const uploads = require('./upload');
+const upload = require('./api/routes/upload');
 
 const server = express();
 
@@ -21,15 +15,14 @@ const corsOptions = {
 
 server.use(cors(corsOptions));
 
-const { PORT, MONGO_URI, DATABASE } = process.env;
+// Routes which should handle requests
+server.use('/upload', upload);
 
-let db = new mongo.Db(DATABASE, new mongo.Server(MONGO_URI));
+const { PORT, MONGO_URI } = process.env;
 
 mongoose.connect(MONGO_URI, { useNewUrlParser: true }).then(
   () => {
     console.log(`Connected to database`);
-    let gfs = Grid(db, mongo);
-    gfs.collection('uploads');
   },
   err => {
     console.log(err);
@@ -37,7 +30,6 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true }).then(
 );
 
 
-server.post('/upload', uploads);
 
 server.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
